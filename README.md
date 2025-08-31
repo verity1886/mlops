@@ -181,11 +181,15 @@ spec:
 	kubectl apply -f application.yaml
 	```
     **MLFlow should appear as ArgoCD Application with Healthy state.**
-3. **Forward ports:**
+3. **Ceck mlflow pod to be RUNNING:**
+	```bash
+	kubectl get pods -n mlflow
+	```
+4. **Forward ports:**
 	```bash
 	kubectl port-forward svc/mlflow -n mlflow 5000:5000
 	```
-4. **Check https://localhost:5000**:
+5. **Check https://localhost:5000**:
 
 
 ### Destroy Infrastructure
