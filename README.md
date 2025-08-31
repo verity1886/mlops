@@ -124,6 +124,69 @@ The following AWS managed policies should be attached to the IAM user/role used 
    ```bash
    terraform apply
    ```
+4. **Check nodes**:
+	```bash
+	aws eks --region us-east-1  update-kubeconfig --name myproject-eks
+	kubectl get nodes
+	```
+
+#### ArgoCD setup
+1. **Setup argocd**:
+   ```bash
+   cd argocd && terraform apply
+   ```
+2. **Forward ports**:
+   ```bash
+    kubectl -n infra-tools port-forward svc/argocd-server 8080:443
+   ```
+
+3. **Get password for ArgoCD UI**:
+   ```bash
+    kubectl -n infra-tools get secret argocd-initial-admin-secret -o jsonpath='{.data.password}' | base64 -d; echo
+   ```
+   
+4. **Check https://localhost:8080**.
+Login as admin with password from the step 3
+
+
+#### Run MLFlow with ArgoCD
+1. **Create application.yaml:**
+```yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: mlflow
+  namespace: infra-tools
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/verity1886/mlflow-rep.git
+    targetRevision: main
+    path: charts/mlflow
+    helm:
+      valueFiles:
+        - values.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: mlflow
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+```
+2. **Run this file:**
+	```bash
+	kubectl apply -f application.yaml
+	```
+    **MLFlow should appear as ArgoCD Application with Healthy state.**
+3. **Forward ports:**
+	```bash
+	kubectl port-forward svc/mlflow -n mlflow 5000:5000
+	```
+4. **Check https://localhost:5000**:
+
 
 ### Destroy Infrastructure
 
@@ -131,21 +194,3 @@ The following AWS managed policies should be attached to the IAM user/role used 
 ```bash
 terraform destroy
 ```
-
-## Infrastructure Components
-
-### VPC Module
-- **VPC**: Custom CIDR block (default: 10.0.0.0/16)
-- **Subnets**: 3 private and 3 public subnets across 3 AZs
-- **Internet Gateway**: For public subnet internet access
-- **NAT Gateway**: For private subnet internet access
-- **Route Tables**: Separate routing for public and private subnets
-
-### EKS Module
-- **EKS Cluster**: Kubernetes cluster with version 1.30
-- **Node Groups**: 
-  - CPU nodes: t3.micro instances
-  - GPU nodes: t3.small instances
-- **Cluster Add-ons**: CoreDNS, EKS Pod Identity Agent, kube-proxy, VPC CNI
-- **Public Access**: Enabled for cluster endpoint
-
