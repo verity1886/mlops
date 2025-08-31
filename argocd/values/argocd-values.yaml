@@ -1,0 +1,65 @@
+controller:
+  replicaCount: 1
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+
+server:
+  replicaCount: 1
+  service:
+    type: ClusterIP
+  extraArgs:
+    - --insecure
+    - --grpc-max-recv-msg-size=33554432
+  rbacConfig:
+    policy.default: role:readonly
+    policy.csv: |
+      g, admin, role:admin
+      g, devs, role:readonly
+  config:
+    timeout.reconciliation: 180s
+    timeout.hard.reconciliation: 300s
+
+repoServer:
+  replicaCount: 1
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+
+redis:
+  replicaCount: 1
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 100m
+      memory: 128Mi
+
+dex:
+  replicaCount: 1
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 100m
+      memory: 128Mi
+
+applicationSet:
+  replicaCount: 1
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 100m
+      memory: 128Mi
