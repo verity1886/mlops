@@ -20,22 +20,12 @@ module "eks" {
   }
   
   eks_managed_node_groups = {
-    cpu-nodes = {
-      desired_capacity = 1
-      max_capacity     = 1
+    default = {
+      desired_capacity = 2
+      max_capacity     = 2
       min_capacity     = 1
-      instance_types   = ["t3.micro"]
+      instance_types   = ["t3.medium"]
       disk_size        = 20
-      subnet_ids = var.private_subnet_ids
-    }
-
-    gpu-nodes = {
-      desired_capacity = 1
-      max_capacity     = 1
-      min_capacity     = 1
-      instance_types   = ["t3.small"]
-      disk_size        = 20
-      labels = { workload = "gpu" }
       subnet_ids = var.private_subnet_ids
     }
   }
