@@ -10,22 +10,6 @@ controller:
 
 server:
   replicaCount: 1
-  service:
-    type: ClusterIP
-  extraArgs:
-    - --insecure
-    - --grpc-max-recv-msg-size=33554432
-  rbacConfig:
-    policy.default: role:readonly
-    policy.csv: |
-      g, admin, role:admin
-      g, devs, role:readonly
-  config:
-    timeout.reconciliation: 180s
-    timeout.hard.reconciliation: 300s
-
-repoServer:
-  replicaCount: 1
   resources:
     requests:
       cpu: 100m
@@ -33,6 +17,16 @@ repoServer:
     limits:
       cpu: 200m
       memory: 256Mi
+
+repoServer:
+  replicaCount: 2
+  resources:
+    requests:
+      cpu: 512m
+      memory: 512Mi
+    limits:
+      cpu: 1024m
+      memory: 1024Mi
 
 redis:
   replicaCount: 1

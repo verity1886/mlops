@@ -21,9 +21,9 @@ module "eks" {
   
   eks_managed_node_groups = {
     default = {
-      desired_capacity = 2
-      max_capacity     = 2
-      min_capacity     = 1
+      desired_capacity = 3
+      max_capacity     = 3
+      min_capacity     = 2
       instance_types   = ["t3.medium"]
       disk_size        = 20
       subnet_ids = var.private_subnet_ids

@@ -1,0 +1,31 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: pushgateway
+  namespace: infra-tools
+spec:
+  project: default
+  source:
+    repoURL: https://prometheus-community.github.io/helm-charts
+    chart: prometheus-pushgateway
+    targetRevision: 2.7.0
+    helm:
+      releaseName: pushgateway
+      parameters:
+        - name: service.type
+          value: ClusterIP
+        - name: service.port
+          value: "9091"
+        - name: resources.requests.memory
+          value: 128Mi
+        - name: resources.requests.cpu
+          value: 50m
+  destination:
+    namespace: monitoring
+    server: https://kubernetes.default.svc
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

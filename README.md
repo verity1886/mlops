@@ -149,48 +149,7 @@ The following AWS managed policies should be attached to the IAM user/role used 
 Login as admin with password from the step 3
 
 
-#### Run MLFlow with ArgoCD
-1. **Create application.yaml:**
-```yaml
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: mlflow
-  namespace: infra-tools
-spec:
-  project: default
-  source:
-    repoURL: https://github.com/verity1886/mlflow-rep.git
-    targetRevision: main
-    path: charts/mlflow
-    helm:
-      valueFiles:
-        - values.yaml
-  destination:
-    server: https://kubernetes.default.svc
-    namespace: mlflow
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
-    syncOptions:
-      - CreateNamespace=true
-```
-2. **Run this file:**
-	```bash
-	kubectl apply -f application.yaml
-	```
-    **MLFlow should appear as ArgoCD Application with Healthy state.**
-3. **Ceck mlflow pod to be RUNNING:**
-	```bash
-	kubectl get pods -n mlflow
-	```
-4. **Forward ports:**
-	```bash
-	kubectl port-forward svc/mlflow -n mlflow 5000:5000
-	```
-5. **Check https://localhost:5000**:
-
+#### further read mlops-experiments/README.md
 
 ### Destroy Infrastructure
 
